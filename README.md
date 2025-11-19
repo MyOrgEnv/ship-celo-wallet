@@ -45,6 +45,136 @@ Open the URL printed in the terminal (e.g. `http://localhost:5173`).
 - **WalletConnectUI** component for connect/disconnect
 - **WalletStatus** component with Celo network switching
 
+## How it works
+
+This starter kit integrates several technologies to create a seamless Celo wallet connection experience:
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         src/main.tsx                            │
+│  Entry point - wraps App with WagmiProvider & React Query      │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   src/providers/WagmiProvider.tsx               │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  Wagmi Configuration:                                     │  │
+│  │  • Chains: Celo Mainnet + Alfajores (from celoChains.ts) │  │
+│  │  • Transports: HTTP RPC endpoints for each chain         │  │
+│  │  • Connectors:                                            │  │
+│  │    - Injected (MetaMask, etc.)                            │  │
+│  │    - WalletConnect (QR code modal)                        │  │
+│  └───────────────────────────────────────────────────────────┘  │
+└────────────────────────┬────────────────────────────────────────┘
+                         │
+                         ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                          App.tsx                                │
+│  Main application component using:                             │
+│  • WalletConnectUI - Connect/disconnect interface              │
+│  • WalletStatus - Network info & switching controls            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Component Flow
+
+#### 1. **Application Entry** (`src/main.tsx`)
+The app starts by wrapping the root `<App />` component with `<WagmiProvider>`, which provides wallet connection functionality throughout the application via React Context.
+
+#### 2. **Wagmi Configuration** (`src/providers/WagmiProvider.tsx`)
+The `WagmiProvider` sets up:
+
+- **Celo Chains**: Imports chain configurations from `src/config/celoChains.ts`
+  - **Celo Mainnet** (Chain ID: 42220)
+  - **Alfajores Testnet** (Chain ID: 44787)
+
+- **HTTP Transports**: Configures RPC endpoints for each chain
+  - Celo: `https://forno.celo.org`
+  - Alfajores: `https://alfajores-forno.celo-testnet.org`
+
+- **Wallet Connectors**:
+  - **Injected**: Detects browser extension wallets (MetaMask, Valora, etc.)
+  - **WalletConnect**: Enables QR code scanning for mobile wallets
+
+- **React Query**: Wraps everything with `QueryClientProvider` for efficient data fetching and caching
+
+#### 3. **Chain Configuration** (`src/config/celoChains.ts`)
+Defines Celo-specific chain parameters using Viem's `defineChain`:
+- Chain IDs, names, and native currency details
+- RPC URLs for network communication
+- Block explorer URLs for transaction viewing
+
+#### 4. **Wallet Connection UI** (`src/components/WalletConnectUI.tsx`)
+Handles the wallet connection interface:
+- Displays available connectors (Injected, WalletConnect)
+- Shows connected wallet address (shortened format)
+- Provides disconnect functionality
+- Uses Wagmi hooks: `useAccount`, `useConnect`, `useDisconnect`
+
+#### 5. **Network Status & Switching** (`src/components/WalletStatus.tsx`)
+Displays current connection state and enables network switching:
+- Shows connection status and current chain
+- Provides buttons to switch between Celo Mainnet and Alfajores
+- Warns when connected to unsupported networks
+- Uses custom hook `useCeloNetwork` for chain management
+
+#### 6. **Network Management Hook** (`src/hooks/useCeloNetwork.ts`)
+Custom React hook that:
+- Tracks the active chain ID
+- Validates if the current chain is supported (Celo or Alfajores)
+- Provides helper functions: `switchToCelo()` and `switchToAlfajores()`
+- Manages switching state and errors
+- Uses Wagmi hooks: `useChainId`, `useSwitchChain`
+
+### Data Flow Example
+
+```
+User clicks "Connect" button
+         │
+         ▼
+WalletConnectUI calls connect() with selected connector
+         │
+         ▼
+Wagmi initiates connection (browser wallet or WalletConnect modal)
+         │
+         ▼
+User approves connection in wallet
+         │
+         ▼
+Wagmi updates connection state → useAccount hook returns address
+         │
+         ▼
+WalletConnectUI shows connected address
+         │
+         ▼
+WalletStatus displays current chain and switching options
+         │
+         ▼
+User clicks "Switch to Alfajores"
+         │
+         ▼
+useCeloNetwork hook calls switchChain() with Alfajores chain ID
+         │
+         ▼
+Wallet prompts user to approve network switch
+         │
+         ▼
+Chain switches → UI updates to show new network
+```
+
+### Key Technologies
+
+- **Vite**: Fast build tool and dev server
+- **React**: UI library with TypeScript
+- **Wagmi**: React hooks for Ethereum/Celo wallet interactions
+- **WalletConnect**: Protocol for connecting mobile wallets via QR codes
+- **Viem**: TypeScript library for Ethereum/Celo interactions (used by Wagmi)
+- **TanStack Query**: Data fetching and caching (required by Wagmi)
+- **Celo**: Layer-1 blockchain with mobile-first design
+
 ## Contributing
 
 See `CONTRIBUTING.md` for guidelines and suggested first issues.
