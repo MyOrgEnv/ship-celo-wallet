@@ -44,6 +44,7 @@ Open the URL printed in the terminal (e.g. `http://localhost:5173`).
 - **WagmiProvider** with React Query in `src/providers/WagmiProvider.tsx`
 - **WalletConnectUI** component for connect/disconnect
 - **WalletStatus** component with Celo network switching
+- **CeloBalance** component for displaying native CELO balance
 
 ## How it works
 
@@ -76,6 +77,7 @@ This starter kit integrates several technologies to create a seamless Celo walle
 │  Main application component using:                             │
 │  • WalletConnectUI - Connect/disconnect interface              │
 │  • WalletStatus - Network info & switching controls            │
+│  • CeloBalance - Native CELO balance display                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -121,7 +123,16 @@ Displays current connection state and enables network switching:
 - Warns when connected to unsupported networks
 - Uses custom hook `useCeloNetwork` for chain management
 
-#### 6. **Network Management Hook** (`src/hooks/useCeloNetwork.ts`)
+#### 6. **CELO Balance Display** (`src/components/CeloBalance.tsx`)
+Displays native CELO balance for the connected wallet:
+- Shows message to connect wallet when not connected
+- Fetches and displays native CELO balance on active chain
+- Formats balance to 6 decimal places for readability
+- Shows current network name alongside balance
+- Uses Wagmi hooks: `useAccount`, `useBalance`
+- Uses viem's `formatEther` for balance formatting
+
+#### 7. **Network Management Hook** (`src/hooks/useCeloNetwork.ts`)
 Custom React hook that:
 - Tracks the active chain ID
 - Validates if the current chain is supported (Celo or Alfajores)

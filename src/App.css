@@ -77,3 +77,11 @@
   font-size: 0.85rem;
   color: #ffd166;
 }
+
+.balance-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  background: radial-gradient(circle at top left, #1b2430, #0b1015 60%);
+  margin-top: 1rem;
+}
