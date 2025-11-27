@@ -1,3 +1,9 @@
+/* 
+  Root container for the entire React app.
+  - Uses flexbox to center the main content on the screen.
+  - min-height: 100vh ensures it spans the full viewport height.
+  - Padding adds consistent spacing around the app at all screen sizes.
+*/
 #root {
   min-height: 100vh;
   display: flex;
@@ -6,20 +12,38 @@
   padding: 2rem;
 }
 
+/*
+  Wrapper for the actual app content.
+  - Centers layout visually by limiting width to 720px.
+  - Width: 100% ensures responsiveness on mobile devices.
+*/
 .app-root {
   max-width: 720px;
   width: 100%;
 }
 
+/*
+  Centers header text and adds spacing from the content below it.
+*/
 .app-header {
   margin-bottom: 1.5rem;
   text-align: center;
 }
 
+/*
+  Top bar (e.g., logo, nav, or wallet selector).
+  - Simple margin to separate from the next section.
+*/
 .app-topbar {
   margin-bottom: 1.5rem;
 }
 
+/*
+  Main wallet card component.
+  - Rounded corners and soft border provide a clean, modern look.
+  - The border uses very subtle white transparency for a “frosted” effect.
+  - Radial gradient gives the card depth and a premium, dApp-style background.
+*/
 .wallet-card {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -27,6 +51,11 @@
   background: radial-gradient(circle at top left, #1b2430, #0b1015 60%);
 }
 
+/*
+  List of wallet connectors (e.g., MetaMask, WalletConnect, etc.).
+  - Flexbox wraps items when space is tight (important for mobile).
+  - gap provides clean spacing between buttons.
+*/
 .connector-list {
   display: flex;
   flex-wrap: wrap;
@@ -34,17 +63,30 @@
   margin-top: 1rem;
 }
 
+/*
+  Error message text.
+  - Red tone (#ff6b6b) communicates failure or alert.
+*/
 .error-text {
   margin-top: 1rem;
   color: #ff6b6b;
 }
 
+/*
+  Container for displaying current wallet status.
+  - Vertical stack with small spacing between items.
+*/
 .wallet-status {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+/*
+  Main row of wallet status indicators.
+  - Wraps on smaller screens to prevent overflow.
+  - Vertically centers badges and labels.
+*/
 .wallet-status-main {
   display: flex;
   flex-wrap: wrap;
@@ -52,12 +94,22 @@
   align-items: center;
 }
 
+/*
+  Contains action buttons (e.g., Disconnect, Refresh).
+  - Flex wrapping ensures they adapt to mobile screens.
+*/
 .wallet-status-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
+/*
+  Reusable pill-style UI element.
+  - Often used for status tags (Connected, Chain Name, etc.).
+  - High border-radius makes them fully rounded (“capsule” shape).
+  - Transparent white background creates a subtle, glassy look.
+*/
 .pill {
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
@@ -65,19 +117,36 @@
   font-size: 0.85rem;
 }
 
+/*
+  Pill variant for “connected” state.
+  - Green tint conveys success or active state.
+*/
 .pill-connected {
   background: rgba(46, 213, 115, 0.18);
 }
 
+/*
+  Pill variant for showing chain info (e.g., Celo Mainnet).
+  - Blue tint differentiates chain identity.
+*/
 .pill-chain {
   background: rgba(100, 108, 255, 0.2);
 }
 
+/*
+  General-purpose warning text.
+  - Yellow tone indicates caution (non-critical issues).
+*/
 .warning-text {
   font-size: 0.85rem;
   color: #ffd166;
 }
 
+/*
+  Displays token balances.
+  - Style matches wallet-card for consistency.
+  - margin-top creates visual separation between sections.
+*/
 .balance-card {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
