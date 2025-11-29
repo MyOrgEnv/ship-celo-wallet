@@ -185,6 +185,159 @@ The project includes:
 - **Celo chains mocking** for network testing
 - **jsdom** for browser-like testing environment
 
+## Troubleshooting
+
+Here are solutions to common issues you might encounter:
+
+### Node.js Version Issues
+
+**Problem**: `npm install` fails with version compatibility errors
+
+**Solution**:
+```bash
+# Check your Node.js version
+node --version
+
+# If you're not using Node.js 18.x or 20.x, update Node.js
+# Download from: https://nodejs.org/
+
+# Or use a version manager:
+# nvm (recommended): https://github.com/nvm-sh/nvm
+nvm install 20
+nvm use 20
+
+# Or n (another version manager):
+npm install -g n
+sudo n 20
+```
+
+### Dependency Installation Failures
+
+**Problem**: `npm install` fails with permission errors or network issues
+
+**Solutions**:
+
+1. **Clear npm cache and reinstall**:
+   ```bash
+   npm cache clean --force
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+2. **Use a different registry** (if behind corporate firewall):
+   ```bash
+   npm install --registry https://registry.npmjs.org/
+   ```
+
+3. **Install with legacy peer deps**:
+   ```bash
+   npm install --legacy-peer-deps
+   ```
+
+### WalletConnect Issues
+
+**Problem**: "Invalid project ID" or wallet connection fails
+
+**Solutions**:
+
+1. **Verify your WalletConnect Project ID**:
+   - Ensure you've created a project at [WalletConnect Cloud](https://cloud.walletconnect.com/)
+   - Check that the ID in your `.env` file is correct
+   - Make sure there are no extra spaces or characters
+
+2. **Restart development server**:
+   ```bash
+   # Stop the server (Ctrl+C)
+   npm run dev
+   ```
+
+3. **Check browser console** for specific error messages
+
+### Build Errors
+
+**Problem**: TypeScript or build errors when running `npm run build`
+
+**Solutions**:
+
+1. **Run type checking first**:
+   ```bash
+   npm run type-check
+   ```
+
+2. **Fix linting issues**:
+   ```bash
+   npm run lint:fix
+   ```
+
+3. **Clear Vite cache**:
+   ```bash
+   rm -rf node_modules/.vite
+   npm run dev
+   ```
+
+### Test Failures
+
+**Problem**: Tests fail to run or show unexpected errors
+
+**Solutions**:
+
+1. **Ensure proper test setup**:
+   ```bash
+   # Run tests in isolated mode
+   npm test -- --run
+   ```
+
+2. **Check test environment**:
+   ```bash
+   # Verify test configuration
+   npm test -- --info
+   ```
+
+3. **Clear test cache**:
+   ```bash
+   rm -rf node_modules/.cache
+   npm test
+   ```
+
+### Development Server Issues
+
+**Problem**: Development server won't start or shows port already in use
+
+**Solutions**:
+
+1. **Kill process using the port**:
+   ```bash
+   # On macOS/Linux:
+   lsof -ti:5173 | xargs kill -9
+   
+   # On Windows:
+   netstat -ano | findstr :5173
+   # Then use taskkill /PID <PID> /F
+   ```
+
+2. **Use a different port**:
+   ```bash
+   npm run dev -- --port 3000
+   ```
+
+3. **Check firewall settings** - ensure localhost connections aren't blocked
+
+### Getting Help
+
+If you're still experiencing issues:
+
+1. **Check the browser console** for JavaScript errors
+2. **Check the terminal** for specific error messages
+3. **Search existing GitHub issues** for similar problems
+4. **Create a new issue** with detailed error information
+
+When reporting issues, please include:
+- Your operating system and version
+- Node.js version (`node --version`)
+- npm version (`npm --version`)
+- Complete error messages
+- Steps to reproduce the issue
+
 ## What you get
 
 - **WalletConnect + Injected connectors** via Wagmi
