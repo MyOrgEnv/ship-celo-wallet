@@ -1,27 +1,59 @@
+/*
+  Global root-level variables and typography settings.
+  These apply to the entire document and set the visual baseline.
+*/
 :root {
+  /* Use system fonts for performance and native OS feel */
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  /* Improve readability of paragraphs and general UI text */
   line-height: 1.5;
   font-weight: 400;
 
+  /* Enable automatic switching between light/dark color modes */
   color-scheme: light dark;
+
+  /* Default text color for dark mode (slightly transparent white) */
   color: rgba(255, 255, 255, 0.87);
+
+  /* Default background color for dark mode */
   background-color: #242424;
 
+  /*
+    Improve text rendering:
+    - font-synthesis: prevent automatic fake bold/italic
+    - optimizeLegibility: better kerning and ligatures
+    - smoothing for crisp text on macOS and WebKit browsers
+  */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/*
+  Base hyperlink styles.
+  - Soft purple color fits well with neutral dark theme.
+  - Remove underline to match modern UI design, but keep hover change.
+*/
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
+/* Slightly darker shade on hover for visual feedback */
 a:hover {
   color: #535bf2;
 }
 
+/*
+  Base body styling.
+  - Remove default margin for a clean layout.
+  - Use flexbox to help center app content (often used by Vite + React templates).
+  - min-width prevents layout breaking on tiny screens.
+  - min-height ensures body matches full viewport height.
+*/
 body {
   margin: 0;
   display: flex;
@@ -30,11 +62,24 @@ body {
   min-height: 100vh;
 }
 
+/*
+  Title styling.
+  - Large and bold to serve as a primary heading.
+  - Tight line-height makes headings compact and visually strong.
+*/
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
 
+/*
+  Base button styles.
+  - Rounded corners (8px) for friendly, modern appearance.
+  - Transparent border allows hover border animation.
+  - Use inherited font for consistency with rest of UI.
+  - Slightly dark background to match dark theme.
+  - Smooth hover transitions (border color only).
+*/
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -46,23 +91,38 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
+/* Accent border on hover for interactivity */
 button:hover {
   border-color: #646cff;
 }
+
+/*
+  Accessibility focus styles.
+  - Use the browser-defined focus ring color (WebKit-based).
+  - Large outline ensures keyboard users can clearly see the focused element.
+*/
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/*
+  Light mode overrides. Triggered when the user prefers a light color scheme.
+  - Improve contrast with darker text on white background.
+  - Adjust link hover and button background to match lighter palette.
+*/
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #213547;         /* Darker text for readability on white */
     background-color: #ffffff;
   }
+
   a:hover {
-    color: #747bff;
+    color: #747bff;         /* Slightly brighter hover state in light mode */
   }
+
   button {
-    background-color: #f9f9f9;
+    background-color: #f9f9f9; /* Light backgrounds feel more natural in light theme */
   }
 }
