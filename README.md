@@ -119,6 +119,72 @@ Here are the scripts you can run in this project:
 | `npm run test:ui` | Run tests with interactive UI |
 | `npm run test:run` | Run tests once and exit |
 
+## Testing
+
+This project uses **Vitest** for testing with **Testing Library** for React component testing.
+
+### Running Tests
+
+```bash
+# Run tests in watch mode (recommended for development)
+npm test
+
+# Run tests with interactive UI
+npm run test:ui
+
+# Run tests once and exit (useful for CI/CD)
+npm run test:run
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+### Test Structure
+
+The project follows this testing structure:
+
+```
+src/
+├── components/tests/          # Component tests
+│   ├── WalletConnectUI.test.tsx
+│   ├── WalletStatus.test.tsx
+│   └── CeloBalance.test.tsx
+├── test/
+│   └── setup.ts              # Test configuration and mocks
+├── App.test.tsx (if added)
+└── ...
+root.test.ts                  # Root configuration tests
+```
+
+### Writing Tests
+
+- **Component Tests**: Located in `src/components/tests/` directory
+- **Test Setup**: Configuration in `src/test/setup.ts`
+- **Test Utilities**: Includes Jest DOM matchers and Wagmi mocks
+
+Example test structure:
+
+```typescript
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { YourComponent } from './YourComponent'
+
+describe('YourComponent', () => {
+  it('should render correctly', () => {
+    render(<YourComponent />)
+    expect(screen.getByText('Expected Text')).toBeInTheDocument()
+  })
+})
+```
+
+### Test Configuration
+
+The project includes:
+- **Jest DOM matchers** for React testing
+- **Wagmi hooks mocking** for wallet functionality testing
+- **Celo chains mocking** for network testing
+- **jsdom** for browser-like testing environment
+
 ## What you get
 
 - **WalletConnect + Injected connectors** via Wagmi
