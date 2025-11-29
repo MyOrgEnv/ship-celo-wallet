@@ -11,6 +11,29 @@ A starter kit for building Celo dApps with:
 
 This project is designed to be forked and extended, especially for the Proof-of-Ship program.
 
+## System Requirements
+
+Before you begin, ensure your development environment meets these requirements:
+
+- **Node.js**: Version 18.x or 20.x (check with `node --version`)
+- **npm**: Version 8 or higher (check with `npm --version`)
+- **Git**: For cloning the repository
+- **Modern Web Browser**: Chrome, Firefox, Safari, or Edge (latest versions)
+
+> **💡 Tip**: We recommend using Node.js 20.x for the best compatibility and performance.
+
+### Checking Your Environment
+
+```bash
+# Check Node.js version
+node --version
+
+# Check npm version
+npm --version
+
+# If you need to install or update Node.js, visit https://nodejs.org/
+```
+
 ## Getting Started
 
 ### 1. Install dependencies
