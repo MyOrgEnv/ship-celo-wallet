@@ -36,29 +36,71 @@ npm --version
 
 ## Getting Started
 
-### 1. Install dependencies
+Follow these detailed steps to get the project running on your local machine.
+
+### 1. Clone and Navigate to Project
 
 ```bash
-npm install
+# Clone the repository (or fork it first as mentioned in Contributing section)
+git clone <repository-url>
+cd ship-celo-wallet
 ```
 
-### 2. Environment variables
+### 2. Install Dependencies
 
-Create a `.env` file in the project root:
+```bash
+# Install project dependencies
+npm install
+
+# Or if you have yarn installed
+yarn install
+
+# Or if you have pnpm installed
+pnpm install
+```
+
+> **⚠️ Important**: Make sure you're using a compatible Node.js version before running `npm install`. See the [System Requirements](#system-requirements) section if you encounter issues.
+
+### 3. Environment Variables
+
+Create a `.env` file in the project root and add your WalletConnect project ID:
+
+```bash
+# Copy the example environment file (if available)
+cp .env.example .env
+
+# Or create a new .env file
+touch .env
+```
+
+Add the following content to your `.env` file:
 
 ```bash
 VITE_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id_here
 ```
 
-> Do not commit `.env` to version control.
+> **🔑 Getting a WalletConnect Project ID**:
+> 1. Visit [WalletConnect Cloud](https://cloud.walletconnect.com/)
+> 2. Sign up for a free account
+> 3. Create a new project
+> 4. Copy the Project ID from your dashboard
+> 
+> **⚠️ Security**: Do not commit `.env` to version control. The `.gitignore` file already includes `.env` to prevent accidental commits.
 
-### 3. Run the dev server
+### 4. Run the Development Server
 
 ```bash
 npm run dev
 ```
 
-Open the URL printed in the terminal (e.g. `http://localhost:5173`).
+You should see output similar to:
+
+```
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+```
+
+Open your browser and navigate to `http://localhost:5173/` to see your application running.
 
 ## What you get
 
