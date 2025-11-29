@@ -5,31 +5,34 @@ import { injected } from 'wagmi/connectors'
 import { walletConnect } from 'wagmi/connectors'
 import { celo, celoAlfajores } from '../config/celoChains'
 
-// TODO: replace with your own WalletConnect project ID via env
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined
+const walletConnectProjectId =
+  import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined
 
-if (!WALLETCONNECT_PROJECT_ID) {
-  console.warn('VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.')
+if (!walletConnectProjectId) {
+  console.warn(
+    'VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.',
+  )
 }
 
 const queryClient = new QueryClient()
+const supportedChains = [celoAlfajores, celo] as const
 
-const chains = [celoAlfajores, celo] as const
+const transports = supportedChains.reduce<Record<number, ReturnType<typeof http>>>(
+  (map, chain) => {
+    map[chain.id] = http(chain.rpcUrls.default.http[0])
+    return map
+  },
+  {},
+)
 
-// Basic Wagmi config using viem http transports and common connectors
 const wagmiConfig = createConfig({
   multiInjectedProviderDiscovery: true,
-  chains,
-  transports: chains.reduce((acc, chain) => {
-    acc[chain.id] = http(chain.rpcUrls.default.http[0])
-    return acc
-  }, {} as Record<number, ReturnType<typeof http>>),
+  chains: supportedChains,
+  transports,
   connectors: [
-    injected({
-      shimDisconnect: true,
-    }),
+    injected({ shimDisconnect: true }),
     walletConnect({
-      projectId: WALLETCONNECT_PROJECT_ID ?? '',
+      projectId: walletConnectProjectId ?? '',
       showQrModal: true,
       metadata: {
         name: 'Web3 Wallet Connect + Celo React Starter Kit',
