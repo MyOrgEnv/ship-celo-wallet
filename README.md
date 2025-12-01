@@ -313,53 +313,247 @@ The project includes:
 - **Celo chains mocking** for network testing
 - **jsdom** for browser-like testing environment
 
-## Troubleshooting
+## Troubleshooting Guide
 
-Here are solutions to common issues you might encounter:
+This section provides detailed solutions to the most common issues you might encounter during setup and development.
+
+### Quick Diagnostic Commands
+
+Before troubleshooting specific issues, run these commands to gather information:
+
+```bash
+# System information
+node --version          # Should be 18.x or 20.x
+npm --version           # Should be 8 or higher
+git --version           # Any recent version
+npm config get registry # Should show https://registry.npmjs.org/
+
+# Check for permission issues
+whoami                  # Current user
+ls -la ~/.npm          # Check npm cache permissions (macOS/Linux)
+npm config get prefix  # Check npm installation path
+```
 
 ### Node.js Version Issues
 
-**Problem**: `npm install` fails with version compatibility errors
+#### Problem: `npm install` fails with version compatibility errors
 
-**Solution**:
-```bash
-# Check your Node.js version
-node --version
+**Symptoms:**
+- Error messages containing "engines" or "node version"
+- `npm install` exits with code 1
+- Packages fail to install with version warnings
 
-# If you're not using Node.js 18.x or 20.x, update Node.js
-# Download from: https://nodejs.org/
+**Step-by-Step Solutions:**
 
-# Or use a version manager:
-# nvm (recommended): https://github.com/nvm-sh/nvm
-nvm install 20
-nvm use 20
+1. **Check Current Version:**
+   ```bash
+   node --version
+   npm --version
+   ```
 
-# Or n (another version manager):
-npm install -g n
-sudo n 20
-```
+2. **If using wrong version (not 18.x or 20.x):**
+   
+   **Option A: Reinstall Node.js**
+   - Download correct version from [nodejs.org](https://nodejs.org/)
+   - Uninstall current version first
+   - Install Node.js 20.x LTS
+   
+   **Option B: Use Version Manager (Recommended)**
+   ```bash
+   # Install nvm (Node Version Manager)
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+   
+   # Restart terminal or reload shell
+   source ~/.bashrc  # or ~/.zshrc
+   
+   # Install and use Node.js 20
+   nvm install 20
+   nvm use 20
+   nvm alias default 20
+   
+   # Verify
+   node --version  # Should show v20.x.x
+   ```
 
-### Dependency Installation Failures
-
-**Problem**: `npm install` fails with permission errors or network issues
-
-**Solutions**:
-
-1. **Clear npm cache and reinstall**:
+3. **Clear npm cache and reinstall:**
    ```bash
    npm cache clean --force
    rm -rf node_modules package-lock.json
    npm install
    ```
 
-2. **Use a different registry** (if behind corporate firewall):
+#### Problem: "Permission denied" when installing global packages
+
+**Solutions:**
+```bash
+# Option 1: Fix npm permissions (macOS/Linux)
+sudo chown -R $(whoami) ~/.npm
+sudo chown -R $(whoami) /usr/local/lib/node_modules
+
+# Option 2: Use a version manager
+nvm use 20
+npm install -g <package-name>
+
+# Option 3: Configure npm to use different directory
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### Dependency Installation Failures
+
+#### Problem: `npm install` fails with various errors
+
+**Common Error Types and Solutions:**
+
+1. **Network-related errors (timeout, connection refused)**
+   
+   **Symptoms:**
+   - `ETIMEDOUT` or `ECONNREFUSED` errors
+   - Network timeout during package download
+   - Proxy/firewall blocking npm registry
+   
+   **Solutions:**
    ```bash
+   # Test npm registry connectivity
+   npm ping
+   
+   # Try different registry
    npm install --registry https://registry.npmjs.org/
+   
+   # If behind corporate firewall, configure proxy
+   npm config set proxy http://proxy.company.com:8080
+   npm config set https-proxy http://proxy.company.com:8080
+   
+   # For Chinese users, use Chinese mirror
+   npm install --registry https://registry.npmmirror.com
    ```
 
-3. **Install with legacy peer deps**:
+2. **Permission errors (EACCES, permission denied)**
+
+   **Symptoms:**
+   - Errors when writing to `/usr/local/lib/node_modules`
+   - Permission denied on package installation
+   
+   **Solutions:**
    ```bash
+   # Fix npm permissions (macOS/Linux)
+   sudo chown -R $(whoami) ~/.npm
+   sudo chown -R $(whoami) /usr/local/lib/node_modules
+   
+   # Or configure npm to use user directory
+   mkdir ~/.npm-global
+   npm config set prefix '~/.npm-global'
+   export PATH=~/.npm-global/bin:$PATH
+   
+   # For global installations, use sudo carefully
+   sudo npm install -g <package-name>
+   ```
+
+3. **Peer dependency conflicts**
+
+   **Symptoms:**
+   - "peer dep missing" warnings
+   - Package conflicts between dependencies
+   - Version incompatibility errors
+   
+   **Solutions:**
+   ```bash
+   # Clear everything and reinstall
+   rm -rf node_modules package-lock.json
+   npm cache clean --force
+   npm install
+   
+   # Install with legacy peer deps (bypasses peer dependency checks)
    npm install --legacy-peer-deps
+   
+   # Force installation (use with caution)
+   npm install --force
+   
+   # Install specific packages individually if conflicts persist
+   npm install <package-name> --legacy-peer-deps
+   ```
+
+4. **Disk space issues**
+
+   **Symptoms:**
+   - "No space left on device" errors
+   - Installation fails mid-way
+   
+   **Solutions:**
+   ```bash
+   # Check disk space
+   df -h  # macOS/Linux
+   dir /-c  # Windows
+   
+   # Clear npm cache to free space
+   npm cache clean --force
+   
+   # Remove unused packages
+   npm prune
+   
+   # Clean node_modules thoroughly
+   rm -rf node_modules
+   npm install
+   ```
+
+5. **Corrupted package-lock.json**
+
+   **Symptoms:**
+   - Installation fails with JSON parsing errors
+   - Inconsistent dependency versions
+   - Lock file corruption messages
+   
+   **Solutions:**
+   ```bash
+   # Backup and regenerate lock file
+   mv package-lock.json package-lock.json.backup
+   npm install
+   ```
+
+#### Advanced Troubleshooting Steps
+
+If basic solutions don't work:
+
+1. **Verbose logging for detailed errors:**
+   ```bash
+   npm install --verbose
+   ```
+
+2. **Check npm configuration:**
+   ```bash
+   npm config list
+   npm config get prefix
+   npm config get registry
+   ```
+
+3. **Reset npm to default settings:**
+   ```bash
+   npm config delete prefix
+   npm config delete registry
+   npm install
+   ```
+
+4. **Create a minimal test case:**
+   ```bash
+   # Create new directory and test basic npm install
+   mkdir test-install
+   cd test-install
+   npm init -y
+   npm install express
+   ```
+
+5. **Check for conflicting tools:**
+   ```bash
+   # Check if yarn is interfering
+   which yarn
+   yarn --version
+   
+   # Check for other Node.js installations
+   which node
+   ls /usr/local/bin/node*
+   ls ~/.nvm/versions/node/*/bin/node
    ```
 
 ### WalletConnect Issues
