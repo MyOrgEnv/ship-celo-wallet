@@ -45,8 +45,24 @@ export function CeloBalance() {
   }
 
   // Format the balance to human-readable format
+  const formatBalance = (value: bigint): string => {
+    const balanceStr = formatEther(value)
+    
+    // Convert to number for easier handling, but be careful with precision
+    const num = parseFloat(balanceStr)
+    
+    // If the balance is very small (less than 0.000001), show more precision
+    if (num > 0 && num < 0.000001) {
+      return num.toFixed(8)
+    }
+    
+    // For regular balances, show up to 6 decimals but trim trailing zeros
+    const formatted = num.toFixed(6)
+    return formatted.replace(/\.?0+$/, '')
+  }
+
   const formattedBalance = balanceData?.value 
-    ? parseFloat(formatEther(balanceData.value)).toFixed(6)
+    ? formatBalance(balanceData.value)
     : '0.000000'
 
   return (
