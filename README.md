@@ -247,71 +247,426 @@ Here are the scripts you can run in this project:
 | `npm run test:ui` | Run tests with interactive UI |
 | `npm run test:run` | Run tests once and exit |
 
-## Testing
+## Testing Guide
 
-This project uses **Vitest** for testing with **Testing Library** for React component testing.
+This project uses **Vitest** for fast unit testing combined with **Testing Library** for React component testing. The testing setup is optimized for blockchain/Web3 applications with Wagmi integration.
 
-### Running Tests
+### Quick Start Testing
 
 ```bash
-# Run tests in watch mode (recommended for development)
+# Run all tests in watch mode (recommended for development)
 npm test
 
-# Run tests with interactive UI
-npm run test:ui
-
-# Run tests once and exit (useful for CI/CD)
+# Run tests once and exit (for CI/CD or quick verification)
 npm run test:run
 
-# Run tests with coverage
+# Run tests with interactive UI (visual test runner)
+npm run test:ui
+
+# Run specific test file
+npm test WalletConnectUI.test.tsx
+
+# Run tests with coverage report
 npm test -- --coverage
+
+# Run tests in CI mode (no watch, with coverage)
+npm test -- --run --coverage
 ```
 
-### Test Structure
+### Test Structure and Organization
 
-The project follows this testing structure:
+The project follows a comprehensive testing structure:
 
 ```
 src/
-├── components/tests/          # Component tests
-│   ├── WalletConnectUI.test.tsx
-│   ├── WalletStatus.test.tsx
-│   └── CeloBalance.test.tsx
+├── components/tests/          # Component unit tests
+│   ├── WalletConnectUI.test.tsx    # Wallet connection UI tests
+│   ├── WalletStatus.test.tsx       # Network status tests
+│   └── CeloBalance.test.tsx        # Balance display tests
 ├── test/
-│   └── setup.ts              # Test configuration and mocks
-├── App.test.tsx (if added)
-└── ...
+│   ├── setup.ts              # Global test configuration
+│   └── mocks/                # Mock implementations
+│       ├── wagmi.ts          # Wagmi hooks mocking
+│       └── celo-chains.ts    # Celo network mocking
+├── hooks/
+│   └── tests/
+│       └── useCeloNetwork.test.ts  # Custom hooks testing
+└── utils/
+    └── tests/
+        └── formatting.test.ts      # Utility functions testing
+
 root.test.ts                  # Root configuration tests
+vitest.config.ts             # Vitest configuration
 ```
 
-### Writing Tests
+### Writing Component Tests
 
-- **Component Tests**: Located in `src/components/tests/` directory
-- **Test Setup**: Configuration in `src/test/setup.ts`
-- **Test Utilities**: Includes Jest DOM matchers and Wagmi mocks
-
-Example test structure:
+#### Basic Component Test Template
 
 ```typescript
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { YourComponent } from './YourComponent'
 
+// Mock external dependencies
+vi.mock('../path/to/externaldependency', () => ({
+  externalFunction: vi.fn(),
+}))
+
 describe('YourComponent', () => {
-  it('should render correctly', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    // Set up common mock implementations
+  })
+
+  it('should render correctly with default props', () => {
     render(<YourComponent />)
+    
     expect(screen.getByText('Expected Text')).toBeInTheDocument()
+    expect(screen.getByRole('button')).toBeInTheDocument()
+  })
+
+  it('should handle user interactions', async () => {
+    const user = userEvent.setup()
+    render(<YourComponent />)
+    
+    await user.click(screen.getByRole('button'))
+    
+    expect(screen.getByText('Action performed')).toBeInTheDocument()
+  })
+
+  it('should display error state when props are invalid', () => {
+    render(<YourComponent error={true} />)
+    
+    expect(screen.getByText(/error occurred/i)).toBeInTheDocument()
   })
 })
 ```
 
-### Test Configuration
+#### Testing with Wagmi Hooks
 
-The project includes:
-- **Jest DOM matchers** for React testing
-- **Wagmi hooks mocking** for wallet functionality testing
-- **Celo chains mocking** for network testing
-- **jsdom** for browser-like testing environment
+When testing components that use Wagmi hooks, proper mocking is essential:
+
+```typescript
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { WalletConnectUI } from './WalletConnectUI'
+
+// Mock Wagmi hooks
+vi.mock('wagmi', () => ({
+  useAccount: vi.fn(),
+  useConnect: vi.fn(),
+  useDisconnect: vi.fn(),
+}))
+
+describe('WalletConnectUI', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should show connect button when wallet is not connected', () => {
+    vi.mocked(useAccount).mockReturnValue({
+      address: undefined,
+      isConnected: false,
+      isConnecting: false,
+      isDisconnected: true,
+    } as any)
+
+    vi.mocked(useConnect).mockReturnValue({
+      connect: vi.fn(),
+      connectors: [],
+      error: null,
+      isLoading: false,
+      isPending: false,
+    } as any)
+
+    render(<WalletConnectUI />)
+    
+    expect(screen.getByText(/connect wallet/i)).toBeInTheDocument()
+  })
+
+  it('should show connected address when wallet is connected', () => {
+    vi.mocked(useAccount).mockReturnValue({
+      address: '0x1234567890123456789012345678901234567890',
+      isConnected: true,
+      isConnecting: false,
+      isDisconnected: false,
+    } as any)
+
+    render(<WalletConnectUI />)
+    
+    expect(screen.getByText(/0x1234...7890/)).toBeInTheDocument()
+  })
+
+  it('should call disconnect when disconnect button is clicked', async () => {
+    const user = userEvent.setup()
+    
+    vi.mocked(useAccount).mockReturnValue({
+      address: '0x1234567890123456789012345678901234567890',
+      isConnected: true,
+    } as any)
+
+    vi.mocked(useDisconnect).mockReturnValue({
+      disconnect: vi.fn(),
+      isPending: false,
+      error: null,
+    } as any)
+
+    render(<WalletConnectUI />)
+    
+    await user.click(screen.getByRole('button', { name: /disconnect/i }))
+    
+    expect(vi.mocked(useDisconnect).mock.results[0].value.disconnect).toHaveBeenCalled()
+  })
+})
+```
+
+### Testing Custom Hooks
+
+```typescript
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { renderHook, act } from '@testing-library/react'
+import { useCeloNetwork } from '../useCeloNetwork'
+
+// Mock Wagmi hooks used by the custom hook
+vi.mock('wagmi', () => ({
+  useChainId: vi.fn(),
+  useSwitchChain: vi.fn(),
+}))
+
+describe('useCeloNetwork', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('should return current network information', () => {
+    vi.mocked(useChainId).mockReturnValue(42220) // Celo Mainnet
+    
+    const { result } = renderHook(() => useCeloNetwork())
+    
+    expect(result.current.activeChainId).toBe(42220)
+    expect(result.current.isSupported).toBe(true)
+    expect(result.current.activeChain?.name).toBe('Celo Mainnet')
+  })
+
+  it('should switch networks correctly', async () => {
+    const mockSwitchChain = vi.fn()
+    vi.mocked(useChainId).mockReturnValue(42220)
+    vi.mocked(useSwitchChain).mockReturnValue({
+      switchChain: mockSwitchChain,
+      isPending: false,
+      error: null,
+    } as any)
+
+    const { result } = renderHook(() => useCeloNetwork())
+    
+    act(() => {
+      result.current.switchToAlfajores()
+    })
+    
+    expect(mockSwitchChain).toHaveBeenCalledWith(44787)
+  })
+})
+```
+
+### Testing Best Practices
+
+#### 1. **Test Naming Conventions**
+- Use descriptive test names that explain what is being tested
+- Follow the pattern: `should [expected behavior] when [condition]`
+
+#### 2. **AAA Pattern (Arrange, Act, Assert)**
+```typescript
+it('should handle form submission correctly', async () => {
+  // Arrange
+  const mockOnSubmit = vi.fn()
+  render(<Form onSubmit={mockOnSubmit} />)
+  
+  // Act
+  await user.type(screen.getByLabelText(/name/i), 'John Doe')
+  await user.click(screen.getByRole('button', { name: /submit/i }))
+  
+  // Assert
+  expect(mockOnSubmit).toHaveBeenCalledWith('John Doe')
+})
+```
+
+#### 3. **Testing User Interactions**
+```typescript
+import userEvent from '@testing-library/user-event'
+
+it('should update input value on change', async () => {
+  const user = userEvent.setup()
+  render(<Input />)
+  
+  const input = screen.getByRole('textbox')
+  await user.type(input, 'Hello World')
+  
+  expect(input).toHaveValue('Hello World')
+})
+```
+
+#### 4. **Async Testing**
+```typescript
+it('should load data asynchronously', async () => {
+  render(<DataComponent />)
+  
+  expect(screen.getByText(/loading/i)).toBeInTheDocument()
+  
+  await waitFor(() => {
+    expect(screen.getByText(/data loaded/i)).toBeInTheDocument()
+  })
+})
+
+it('should handle async errors', async () => {
+  render(<DataComponent />)
+  
+  await waitFor(() => {
+    expect(screen.getByText(/error/i)).toBeInTheDocument()
+  })
+})
+```
+
+#### 5. **Accessibility Testing**
+```typescript
+it('should be accessible to screen readers', () => {
+  render(<Button>Click me</Button>)
+  
+  expect(screen.getByRole('button')).toBeInTheDocument()
+  expect(screen.getByRole('button')).toHaveAccessibleName('Click me')
+})
+
+it('should support keyboard navigation', async () => {
+  const user = userEvent.setup()
+  render(<Modal />)
+  
+  await user.tab()
+  expect(screen.getByLabelText(/first input/i)).toHaveFocus()
+  
+  await user.tab()
+  expect(screen.getByLabelText(/second input/i)).toHaveFocus()
+})
+```
+
+### Mocking Strategy
+
+#### 1. **External APIs and Services**
+```typescript
+vi.mock('@walletconnect/ethereum-provider', () => ({
+  EthereumProvider: {
+    init: vi.fn().mockResolvedValue({
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+    }),
+  },
+}))
+```
+
+#### 2. **Environment Variables**
+```typescript
+vi.mock('../config/environment', () => ({
+  WALLETCONNECT_PROJECT_ID: 'test-project-id',
+  RPC_URL: 'https://test-rpc.com',
+}))
+```
+
+#### 3. **Date and Time**
+```typescript
+it('should format dates correctly', () => {
+  const mockDate = new Date('2023-12-01T12:00:00Z')
+  vi.setSystemTime(mockDate)
+  
+  const { result } = renderHook(() => useDateFormatter())
+  expect(result.current.formatNow()).toBe('Dec 1, 2023')
+  
+  vi.useRealTimers()
+})
+```
+
+### Coverage and Quality Metrics
+
+```bash
+# Generate coverage report
+npm test -- --coverage
+
+# View coverage in browser
+npm run test:ui
+
+# Set coverage thresholds in vitest.config.ts
+export default defineConfig({
+  test: {
+    coverage: {
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+        },
+      },
+    },
+  },
+})
+```
+
+### Continuous Integration Testing
+
+The project includes GitHub Actions CI configuration that runs:
+
+1. **Install dependencies** with npm ci
+2. **Type checking** with `npm run type-check`
+3. **Linting** with `npm run lint`
+4. **All tests** with `npm run test:run -- --coverage`
+5. **Build verification** with `npm run build`
+
+#### Running CI Tests Locally
+
+```bash
+# Simulate CI environment
+npm ci                    # Clean install like CI
+npm run type-check        # Type checking
+npm run lint             # Linting
+npm run test:run -- --coverage  # Tests with coverage
+npm run build            # Production build
+```
+
+### Debugging Tests
+
+#### 1. **Using Browser DevTools**
+```bash
+# Run tests in browser mode
+npm run test:ui
+```
+
+#### 2. **Adding Console Logging**
+```typescript
+it('should debug test execution', () => {
+  console.log('Test is running')
+  render(<Component />)
+  console.log(screen.debug()) // Logs rendered DOM
+})
+```
+
+#### 3. **Using Vitest's Debug Features**
+```typescript
+it('should provide detailed output', async () => {
+  render(<Component />)
+  
+  // This will show detailed error information
+  await expect(screen.findByText('Expected')).rejects.toThrow()
+})
+```
+
+### Test Configuration Details
+
+The project includes comprehensive test setup in `src/test/setup.ts`:
+
+- **Jest DOM matchers** for enhanced assertions
+- **Wagmi hooks mocking** for blockchain functionality
+- **Celo networks mocking** for testing different networks
+- **Global test utilities** for common testing patterns
 
 ## Troubleshooting Guide
 
