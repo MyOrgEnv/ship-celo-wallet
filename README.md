@@ -15,23 +15,151 @@ This project is designed to be forked and extended, especially for the Proof-of-
 
 Before you begin, ensure your development environment meets these requirements:
 
-- **Node.js**: Version 18.x or 20.x (check with `node --version`)
-- **npm**: Version 8 or higher (check with `npm --version`)
-- **Git**: For cloning the repository
+- **Node.js**: Version 18.x or 20.x (we recommend 20.x LTS)
+- **npm**: Version 8 or higher (comes with Node.js)
+- **Git**: For cloning and version control
 - **Modern Web Browser**: Chrome, Firefox, Safari, or Edge (latest versions)
+- **Code Editor**: VS Code (recommended) or any TypeScript-compatible editor
 
-> **💡 Tip**: We recommend using Node.js 20.x for the best compatibility and performance.
+> **💡 Tip**: We strongly recommend using Node.js 20.x LTS for the best compatibility, performance, and long-term support.
+
+### Platform-Specific Installation Guides
+
+#### Windows
+1. **Node.js Installation**:
+   - Download from [nodejs.org](https://nodejs.org/) (choose 20.x LTS)
+   - Run the installer and follow the setup wizard
+   - Verify installation: Open Command Prompt and run `node --version`
+
+2. **Git Installation**:
+   - Download from [git-scm.com](https://git-scm.com/download/win)
+   - Use default settings during installation
+   - Verify: Open Command Prompt and run `git --version`
+
+#### macOS
+1. **Node.js Installation** (choose one):
+   - **Option A**: Download from [nodejs.org](https://nodejs.org/)
+   - **Option B**: Using Homebrew (recommended):
+     ```bash
+     # Install Homebrew if not already installed
+     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+     
+     # Install Node.js 20
+     brew install node@20
+     ```
+
+2. **Git Installation**:
+   ```bash
+   # Using Homebrew
+   brew install git
+   
+   # Or download from git-scm.com
+   ```
+
+#### Linux (Ubuntu/Debian)
+```bash
+# Update package index
+sudo apt update
+
+# Install Node.js 20 and npm
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install Git
+sudo apt install git
+
+# Verify installations
+node --version
+npm --version
+git --version
+```
+
+### Version Manager Recommendations (Advanced Users)
+
+For developers who work with multiple Node.js versions:
+
+#### Using nvm (Node Version Manager) - Recommended
+```bash
+# Install nvm (macOS/Linux)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Restart terminal or run:
+source ~/.bashrc
+
+# Install and use Node.js 20
+nvm install 20
+nvm use 20
+nvm alias default 20
+
+# Verify
+node --version  # Should show v20.x.x
+```
+
+#### Using n (Simple Alternative)
+```bash
+# Install n globally
+npm install -g n
+
+# Install Node.js 20
+n 20
+
+# Verify
+node --version
+```
 
 ### Checking Your Environment
 
+Run these commands to verify your setup:
+
 ```bash
-# Check Node.js version
+# Check Node.js version (should be 18.x or 20.x)
 node --version
 
-# Check npm version
+# Check npm version (should be 8 or higher)
 npm --version
 
-# If you need to install or update Node.js, visit https://nodejs.org/
+# Check Git version
+git --version
+
+# Check if you can access the npm registry
+npm ping
+
+# If you see version errors, see the Troubleshooting section below
+```
+
+### Development Tools Setup
+
+#### VS Code (Recommended)
+1. Download from [code.visualstudio.com](https://code.visualstudio.com/)
+2. Install recommended extensions:
+   - ES7+ React/Redux/React-Native snippets
+   - TypeScript Importer
+   - Prettier - Code formatter
+   - ESLint
+   - Auto Rename Tag
+   -Bracket Pair Colorizer
+
+#### Command Line Basics
+Familiarize yourself with these commands:
+
+```bash
+# Navigate to a directory
+cd directory-name
+
+# List contents
+ls          # macOS/Linux
+dir         # Windows
+
+# Create a directory
+mkdir new-folder
+
+# Check current directory
+pwd         # macOS/Linux
+cd          # Windows
+
+# Clear terminal
+clear       # macOS/Linux
+cls         # Windows
 ```
 
 ## Getting Started
