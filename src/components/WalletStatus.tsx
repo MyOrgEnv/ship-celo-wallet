@@ -1,12 +1,12 @@
-import { useAccount } from 'wagmi'
-import { useCeloNetwork } from '../hooks/useCeloNetwork'
+import { useAccount } from 'wagmi';
+import { useCeloNetwork } from '../hooks/useCeloNetwork';
 
-function shortenAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
+function shortenAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
-export function WalletStatus() {
-  const { address, isConnected } = useAccount()
+export function WalletStatus(): JSX.Element {
+  const { address, isConnected } = useAccount();
   const {
     activeChain,
     isSupported,
@@ -14,8 +14,8 @@ export function WalletStatus() {
     alfajores,
     switchToCelo,
     switchToAlfajores,
-    isSwitching,
-  } = useCeloNetwork()
+    isSwitching
+  } = useCeloNetwork();
 
   return (
     <div className="wallet-status">
@@ -55,5 +55,5 @@ export function WalletStatus() {
         </p>
       )}
     </div>
-  )
+  );
 }
