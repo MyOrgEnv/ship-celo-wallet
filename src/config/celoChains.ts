@@ -1,4 +1,4 @@
-import { defineChain } from 'viem'
+import { defineChain } from 'viem';
 
 const createCeloChain = ({
   id,

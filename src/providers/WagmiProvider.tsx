@@ -1,9 +1,9 @@
-import type { PropsWithChildren } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider as BaseWagmiProvider, createConfig, http } from 'wagmi'
-import { injected } from 'wagmi/connectors'
-import { walletConnect } from 'wagmi/connectors'
-import { celo, celoAlfajores } from '../config/celoChains'
+import React, { type PropsWithChildren } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WagmiProvider as BaseWagmiProvider, createConfig, http } from 'wagmi';
+import { injected } from 'wagmi/connectors';
+import { walletConnect } from 'wagmi/connectors';
+import { celo, celoAlfajores } from '../config/celoChains';
 
 const walletConnectProjectId =
   import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined
@@ -38,16 +38,16 @@ const wagmiConfig = createConfig({
         name: 'Web3 Wallet Connect + Celo React Starter Kit',
         description: 'React + Vite + Wagmi + WalletConnect starter for Celo',
         url: 'https://example.com',
-        icons: ['https://walletconnect.com/walletconnect-logo.png'],
-      },
-    }),
-  ],
-})
+        icons: ['https://walletconnect.com/walletconnect-logo.png']
+      }
+    })
+  ]
+});
 
-export function WagmiProvider({ children }: PropsWithChildren) {
+export function WagmiProvider({ children }: PropsWithChildren): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <BaseWagmiProvider config={wagmiConfig}>{children}</BaseWagmiProvider>
     </QueryClientProvider>
-  )
+  );
 }

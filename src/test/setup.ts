@@ -1,9 +1,9 @@
-import '@testing-library/jest-dom'
-import { expect, vi } from 'vitest'
-import * as matchers from '@testing-library/jest-dom/matchers'
+import '@testing-library/jest-dom';
+import { expect, vi } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
 
 // extends Vitest's expect with jest-dom matchers
-expect.extend(matchers)
+expect.extend(matchers);
 
 // Mock wagmi hooks
 vi.mock('wagmi', () => ({
@@ -11,8 +11,8 @@ vi.mock('wagmi', () => ({
   useConnect: vi.fn(),
   useDisconnect: vi.fn(),
   useChainId: vi.fn(),
-  useSwitchChain: vi.fn(),
-}))
+  useSwitchChain: vi.fn()
+}));
 
 // Mock the celo chains config
 vi.mock('../config/celoChains', () => ({
@@ -21,13 +21,13 @@ vi.mock('../config/celoChains', () => ({
     name: 'Celo Mainnet',
     network: 'celo',
     nativeCurrency: { name: 'CELO', decimals: 18, symbol: 'CELO' },
-    rpcUrls: { default: { http: ['https://forno.celo.org'] } },
+    rpcUrls: { default: { http: ['https://forno.celo.org'] } }
   },
   celoAlfajores: {
     id: 44787,
     name: 'Celo Alfajores',
     network: 'alfajores',
     nativeCurrency: { name: 'CELO', decimals: 18, symbol: 'CELO' },
-    rpcUrls: { default: { http: ['https://alfajores-forno.celo.org'] } },
-  },
-}))
+    rpcUrls: { default: { http: ['https://alfajores-forno.celo.org'] } }
+  }
+}));

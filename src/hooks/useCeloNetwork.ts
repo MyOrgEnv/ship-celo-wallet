@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react'
-import { useChainId, useSwitchChain } from 'wagmi'
-import { celo, celoAlfajores } from '../config/celoChains'
+import { useCallback, useMemo } from 'react';
+import { useChainId, useSwitchChain } from 'wagmi';
+import { celo, celoAlfajores } from '../config/celoChains';
 
 const AVAILABLE_CHAINS = [celoAlfajores, celo] as const
 
@@ -41,6 +41,6 @@ export function useCeloNetwork() {
     switchToAlfajores,
     isSwitching: isPending,
     status,
-    error,
-  }
+    error
+  };
 }

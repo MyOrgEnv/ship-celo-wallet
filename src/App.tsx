@@ -1,9 +1,9 @@
-import './App.css'
-import { WalletConnectUI } from './components/WalletConnectUI'
-import { WalletStatus } from './components/WalletStatus'
-import { CeloBalance } from './components/CeloBalance'
+import './App.css';
+import { WalletConnectUI } from './components/WalletConnectUI';
+import { WalletStatus } from './components/WalletStatus';
+import { CeloBalance } from './components/CeloBalance';
 
-function App() {
+function App(): JSX.Element {
   return (
     <div className="app-root">
       <header className="app-header">
@@ -18,7 +18,7 @@ function App() {
         <CeloBalance />
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
