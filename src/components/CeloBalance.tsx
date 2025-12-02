@@ -51,6 +51,11 @@ export function CeloBalance(): JSX.Element {
     // Convert to number for easier handling, but be careful with precision
     const num = parseFloat(balanceStr);
 
+    // Handle invalid numbers
+    if (Number.isNaN(num) || !Number.isFinite(num)) {
+      return '0.000000';
+    }
+
     // If the balance is very small (less than 0.000001), show more precision
     if (num > 0 && num < 0.000001) {
       return num.toFixed(8);
