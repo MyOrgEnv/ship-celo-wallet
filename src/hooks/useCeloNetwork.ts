@@ -2,51 +2,41 @@ import { useCallback, useMemo } from 'react';
 import { useChainId, useSwitchChain } from 'wagmi';
 import { celo, celoAlfajores } from '../config/celoChains';
 
-const CELO_CHAINS = [celoAlfajores, celo] as const;
+const AVAILABLE_CHAINS = [celoAlfajores, celo] as const
 
 export function useCeloNetwork() {
-  const activeChainId = useChainId();
-  const { chains, switchChain, isPending, status, error } = useSwitchChain();
+  const currentChainId = useChainId()
+  const { chains, switchChain, isPending, status, error } = useSwitchChain()
 
-  const isSupported = useMemo(
-    () => CELO_CHAINS.some((chain) => chain.id === activeChainId),
-    [activeChainId]
-  );
+  const isSupportedChain = useMemo(
+    () => AVAILABLE_CHAINS.some((chain) => chain.id === currentChainId),
+    [currentChainId],
+  )
 
-  const activeChain = useMemo(
-    () => CELO_CHAINS.find((chain) => chain.id === activeChainId) ?? null,
-    [activeChainId]
-  );
+  const currentChain = useMemo(
+    () => AVAILABLE_CHAINS.find((chain) => chain.id === currentChainId) ?? null,
+    [currentChainId],
+  )
 
-  const celoMainnet = celo;
-  const alfajores = celoAlfajores;
+  const switchTo = useCallback(
+    (targetChainId: number) => {
+      const target = chains.find((chain) => chain.id === targetChainId)
+      if (target && switchChain) {
+        switchChain({ chainId: target.id })
+      }
+    },
+    [chains, switchChain],
+  )
 
-  const switchToCelo = useCallback(() => {
-    const target = chains.find((c) => c.id === celoMainnet.id);
-    if (target && switchChain) {
-      switchChain({ chainId: target.id });
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn('Celo mainnet not available in current wallet or switchChain not supported');
-    }
-  }, [chains, switchChain, celoMainnet.id]);
-
-  const switchToAlfajores = useCallback(() => {
-    const target = chains.find((c) => c.id === alfajores.id);
-    if (target && switchChain) {
-      switchChain({ chainId: target.id });
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn('Alfajores testnet not available in current wallet or switchChain not supported');
-    }
-  }, [chains, switchChain, alfajores.id]);
+  const switchToCelo = useCallback(() => switchTo(celo.id), [switchTo])
+  const switchToAlfajores = useCallback(() => switchTo(celoAlfajores.id), [switchTo])
 
   return {
-    activeChainId,
-    activeChain,
-    isSupported,
-    celoMainnet,
-    alfajores,
+    currentChainId,
+    currentChain,
+    isSupportedChain,
+    celoMainnet: celo,
+    alfajores: celoAlfajores,
     switchToCelo,
     switchToAlfajores,
     isSwitching: isPending,

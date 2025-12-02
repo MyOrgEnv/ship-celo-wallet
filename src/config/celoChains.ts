@@ -1,29 +1,52 @@
 import { defineChain } from 'viem';
 
-export const celo = defineChain({
+const createCeloChain = ({
+  id,
+  name,
+  currencyName,
+  rpc,
+  explorerName,
+  explorerUrl,
+}: {
+  id: number
+  name: string
+  currencyName: string
+  rpc: string
+  explorerName: string
+  explorerUrl: string
+}) =>
+  defineChain({
+    id,
+    name,
+    nativeCurrency: {
+      name: currencyName,
+      symbol: 'CELO',
+      decimals: 18,
+    },
+    rpcUrls: {
+      default: {
+        http: [rpc],
+      },
+    },
+    blockExplorers: {
+      default: { name: explorerName, url: explorerUrl },
+    },
+  })
+
+export const celo = createCeloChain({
   id: 42220,
   name: 'Celo',
-  nativeCurrency: { name: 'Celo', symbol: 'CELO', decimals: 18 },
-  rpcUrls: {
-    default: {
-      http: ['https://forno.celo.org']
-    }
-  },
-  blockExplorers: {
-    default: { name: 'Celo Explorer', url: 'https://celoscan.io' }
-  }
-});
+  currencyName: 'Celo',
+  rpc: 'https://forno.celo.org',
+  explorerName: 'Celo Explorer',
+  explorerUrl: 'https://celoscan.io',
+})
 
-export const celoAlfajores = defineChain({
+export const celoAlfajores = createCeloChain({
   id: 44787,
   name: 'Alfajores',
-  nativeCurrency: { name: 'Alfajores Celo', symbol: 'CELO', decimals: 18 },
-  rpcUrls: {
-    default: {
-      http: ['https://alfajores-forno.celo-testnet.org']
-    }
-  },
-  blockExplorers: {
-    default: { name: 'CeloScan Alfajores', url: 'https://alfajores.celoscan.io' }
-  }
-});
+  currencyName: 'Alfajores Celo',
+  rpc: 'https://alfajores-forno.celo-testnet.org',
+  explorerName: 'CeloScan Alfajores',
+  explorerUrl: 'https://alfajores.celoscan.io',
+})
