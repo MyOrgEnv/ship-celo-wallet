@@ -1,3 +1,4 @@
+import React from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { useState } from 'react';
 
@@ -15,11 +16,26 @@ export function WalletConnectUI(): JSX.Element {
     setError(null);
     try {
       const connector = connectors.find((c) => c.id === id) ?? connectors[0];
+      if (!connector) {
+        setError('No connector available. Please refresh the page and try again.');
+        return;
+      }
       await connect({ connector });
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.error(e);
+      console.error('Wallet connection failed:', e);
       setError('Failed to connect wallet. Please try again.');
+    }
+  };
+
+  const handleDisconnect = (): void => {
+    try {
+      disconnect();
+      setError(null);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('Wallet disconnection failed:', e);
+      setError('Failed to disconnect wallet. Please try again.');
     }
   };
 
@@ -28,7 +44,7 @@ export function WalletConnectUI(): JSX.Element {
       <div className="wallet-card">
         <h2>Connected</h2>
         <p>Address: {shortenAddress(address)}</p>
-        <button onClick={() => disconnect()}>Disconnect</button>
+        <button onClick={handleDisconnect}>Disconnect</button>
       </div>
     );
   }
