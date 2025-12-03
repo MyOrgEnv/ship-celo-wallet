@@ -22,7 +22,6 @@ export function WalletConnectUI(): JSX.Element {
       }
       await connect({ connector });
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error('Wallet connection failed:', e);
       setError('Failed to connect wallet. Please try again.');
     }
@@ -33,7 +32,6 @@ export function WalletConnectUI(): JSX.Element {
       disconnect();
       setError(null);
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error('Wallet disconnection failed:', e);
       setError('Failed to disconnect wallet. Please try again.');
     }
