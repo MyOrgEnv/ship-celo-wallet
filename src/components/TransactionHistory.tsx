@@ -1,0 +1,300 @@
+import React, { useState, useEffect } from 'react';
+import { useAccount } from 'wagmi';
+import {
+  ArrowUpIcon,
+  ArrowDownIcon,
+  ClockIcon,
+  ExclamationCircleIcon,
+  ArrowPathIcon,
+  MagnifyingGlassIcon
+} from '@heroicons/react/24/outline';
+import { useTransactionHistory } from '../hooks/useTransactionHistory';
+import { TransactionFilters } from '../types/transaction';
+import {
+  getTransactionUrl,
+  getAddressUrl,
+  formatTransactionHash,
+  formatRelativeTime,
+  formatValue
+} from '../utils/celoExplorer';
+
+interface TransactionHistoryProps {
+  maxHeight?: string;
+  className?: string;
+}
+
+interface FilterState extends TransactionFilters {
+  search: string;
+}
+
+export function TransactionHistory({ className = '' }: TransactionHistoryProps) {
+  const { address, isConnected } = useAccount();
+  const { fetchTransactions, error } = useTransactionHistory();
+
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    type: 'all',
+    status: 'all',
+    search: ''
+  });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Fetch transactions on mount and when filters change
+  useEffect(() => {
+    if (isConnected && address) {
+      loadTransactions();
+    }
+  }, [isConnected, address, filters]);
+
+  const loadTransactions = async () => {
+    if (!isConnected || !address) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await fetchTransactions({
+        limit: itemsPerPage * currentPage,
+        filters: {
+          type: filters.type,
+          status: filters.status
+        }
+      });
+      setTransactions(result.transactions);
+    } catch (error) {
+      console.error('Failed to load transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    await loadTransactions();
+  };
+
+  const handleFilterChange = (newFilters: Partial<FilterState>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const getTransactionIcon = (type: string, status: string) => {
+    if (status === 'pending') {
+      return <ClockIcon className="w-5 h-5 text-yellow-500" />;
+    }
+    if (status === 'failure') {
+      return <ExclamationCircleIcon className="w-5 h-5 text-red-500" />;
+    }
+
+    switch (type) {
+      case 'sent':
+        return <ArrowUpIcon className="w-5 h-5 text-red-500" />;
+      case 'received':
+        return <ArrowDownIcon className="w-5 h-5 text-green-500" />;
+      case 'contract':
+        return <ArrowUpIcon className="w-5 h-5 text-blue-500" />;
+      default:
+        return <ArrowUpIcon className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'success':
+        return 'text-green-600 bg-green-100';
+      case 'failure':
+        return 'text-red-600 bg-red-100';
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const filteredTransactions = transactions.filter(tx => {
+    if (filters.search) {
+      const searchLower = filters.search.toLowerCase();
+      return (
+        tx.hash.toLowerCase().includes(searchLower) ||
+        tx.from.toLowerCase().includes(searchLower) ||
+        tx.to.toLowerCase().includes(searchLower)
+      );
+    }
+    return true;
+  });
+
+  if (!isConnected) {
+    return (
+      <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
+        <h3 className="text-lg font-semibold mb-4">Transaction History</h3>
+        <div className="text-center py-8">
+          <p className="text-gray-500 mb-4">Connect your wallet to view transaction history</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`bg-white rounded-lg shadow-md ${className}`}>
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Transaction History</h3>
+          <button
+            onClick={handleRefresh}
+            disabled={loading}
+            className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
+          >
+            <ArrowPathIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 items-center">
+          {/* Search */}
+          <div className="relative">
+            <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search transactions..."
+              value={filters.search}
+              onChange={(e) => handleFilterChange({ search: e.target.value })}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Type Filter */}
+          <select
+            value={filters.type || 'all'}
+            onChange={(e) => handleFilterChange({ type: e.target.value as any })}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">All Types</option>
+            <option value="sent">Sent</option>
+            <option value="received">Received</option>
+            <option value="contract">Contract</option>
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={filters.status || 'all'}
+            onChange={(e) => handleFilterChange({ status: e.target.value as any })}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">All Status</option>
+            <option value="success">Success</option>
+            <option value="pending">Pending</option>
+            <option value="failure">Failed</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Transaction List */}
+      <div className="max-h-96 overflow-y-auto">
+        {loading ? (
+          <div className="p-6 text-center">
+            <ArrowPathIcon className="w-8 h-8 animate-spin mx-auto text-gray-400 mb-2" />
+            <p className="text-gray-500">Loading transactions...</p>
+          </div>
+        ) : error ? (
+          <div className="p-6 text-center">
+            <ExclamationCircleIcon className="w-8 h-8 text-red-500 mx-auto mb-2" />
+            <p className="text-red-500 mb-2">Error loading transactions</p>
+            <p className="text-sm text-gray-500">{error.message}</p>
+          </div>
+        ) : filteredTransactions.length === 0 ? (
+          <div className="p-6 text-center">
+            <p className="text-gray-500">No transactions found</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {filteredTransactions.map((tx) => (
+              <div key={tx.hash} className="p-4 hover:bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    {getTransactionIcon(tx.type, tx.status)}
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium capitalize">{tx.type}</span>
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${getStatusColor(
+                            tx.status
+                          )}`}
+                        >
+                          {tx.status}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-500 space-x-2">
+                        <span>{formatRelativeTime(tx.timestamp)}</span>
+                        <span>•</span>
+                        <span>{formatValue(tx.value)} CELO</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-mono">
+                      <a
+                        href={getTransactionUrl(tx.hash, tx.chainId)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        {formatTransactionHash(tx.hash)}
+                      </a>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      <a
+                        href={getAddressUrl(tx.from, tx.chainId)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-gray-700"
+                      >
+                        {formatTransactionHash(tx.from)}
+                      </a>
+                      {' → '}
+                      <a
+                        href={getAddressUrl(tx.to, tx.chainId)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-gray-700"
+                      >
+                        {formatTransactionHash(tx.to)}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Pagination */}
+      {filteredTransactions.length > itemsPerPage && (
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-500">
+              Page {currentPage}
+            </span>
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={filteredTransactions.length < itemsPerPage}
+              className="px-3 py-1 text-sm border rounded-md disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
