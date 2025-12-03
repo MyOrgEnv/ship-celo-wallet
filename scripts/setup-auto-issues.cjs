@@ -29,7 +29,7 @@ console.log('📋 Setting up pre-push hook...');
 
 const hooksDir = path.join('.git', 'hooks');
 const prePushHookPath = path.join(hooksDir, 'pre-push');
-const prePushHookSource = path.join('scripts', 'pre-push-hook.js');
+const prePushHookSource = path.join('scripts', 'pre-push-hook.cjs');
 
 if (!fs.existsSync(hooksDir)) {
   fs.mkdirSync(hooksDir, { recursive: true });
