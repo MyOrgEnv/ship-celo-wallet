@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import {
-  ArrowUpIcon,
-  ArrowDownIcon,
-  ClockIcon,
-  ExclamationCircleIcon,
-  ArrowPathIcon,
-  MagnifyingGlassIcon
-} from '@heroicons/react/24/outline';
 import { useTransactionHistory } from '../hooks/useTransactionHistory';
 import { TransactionFilters } from '../types/transaction';
 import {
@@ -82,21 +74,21 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
 
   const getTransactionIcon = (type: string, status: string) => {
     if (status === 'pending') {
-      return <ClockIcon className="w-5 h-5 text-yellow-500" />;
+      return <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center">⏱</div>;
     }
     if (status === 'failure') {
-      return <ExclamationCircleIcon className="w-5 h-5 text-red-500" />;
+      return <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">✕</div>;
     }
 
     switch (type) {
       case 'sent':
-        return <ArrowUpIcon className="w-5 h-5 text-red-500" />;
+        return <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">↑</div>;
       case 'received':
-        return <ArrowDownIcon className="w-5 h-5 text-green-500" />;
+        return <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">↓</div>;
       case 'contract':
-        return <ArrowUpIcon className="w-5 h-5 text-blue-500" />;
+        return <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">⚡</div>;
       default:
-        return <ArrowUpIcon className="w-5 h-5 text-gray-500" />;
+        return <div className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center">↑</div>;
     }
   };
 
@@ -147,7 +139,9 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
             disabled={loading}
             className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-50"
           >
-            <ArrowPathIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+            <div className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`}>
+              🔄
+            </div>
           </button>
         </div>
 
@@ -155,7 +149,9 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
         <div className="flex flex-wrap gap-4 items-center">
           {/* Search */}
           <div className="relative">
-            <MagnifyingGlassIcon className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              🔍
+            </div>
             <input
               type="text"
               placeholder="Search transactions..."
@@ -195,12 +191,12 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
       <div className="max-h-96 overflow-y-auto">
         {loading ? (
           <div className="p-6 text-center">
-            <ArrowPathIcon className="w-8 h-8 animate-spin mx-auto text-gray-400 mb-2" />
+            <div className="w-8 h-8 animate-spin mx-auto text-gray-400 mb-2">🔄</div>
             <p className="text-gray-500">Loading transactions...</p>
           </div>
         ) : error ? (
           <div className="p-6 text-center">
-            <ExclamationCircleIcon className="w-8 h-8 text-red-500 mx-auto mb-2" />
+            <div className="w-8 h-8 text-red-500 mx-auto mb-2">⚠</div>
             <p className="text-red-500 mb-2">Error loading transactions</p>
             <p className="text-sm text-gray-500">{error.message}</p>
           </div>
