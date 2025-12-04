@@ -2,6 +2,7 @@ import './App.css';
 import { WalletConnectUI } from './components/WalletConnectUI';
 import { WalletStatus } from './components/WalletStatus';
 import { CeloBalance } from './components/CeloBalance';
+import { TransactionHistory } from './components/TransactionHistory';
 
 function App(): JSX.Element {
   return (
@@ -13,9 +14,10 @@ function App(): JSX.Element {
       <section className="app-topbar">
         <WalletStatus />
       </section>
-      <main>
+      <main className="app-main">
         <WalletConnectUI />
         <CeloBalance />
+        <TransactionHistory className="mt-6" />
       </main>
     </div>
   );
