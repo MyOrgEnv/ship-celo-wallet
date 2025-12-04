@@ -80,15 +80,15 @@ export function sortTransactions(
     let comparison = 0;
 
     switch (sortBy) {
-      case 'timestamp':
-        comparison = a.timestamp - b.timestamp;
-        break;
-      case 'value':
-        comparison = BigInt(a.value) > BigInt(b.value) ? 1 : -1;
-        break;
-      case 'gasUsed':
-        comparison = BigInt(a.gasUsed) > BigInt(b.gasUsed) ? 1 : -1;
-        break;
+    case 'timestamp':
+      comparison = a.timestamp - b.timestamp;
+      break;
+    case 'value':
+      comparison = BigInt(a.value) > BigInt(b.value) ? 1 : -1;
+      break;
+    case 'gasUsed':
+      comparison = BigInt(a.gasUsed) > BigInt(b.gasUsed) ? 1 : -1;
+      break;
     }
 
     return order === 'desc' ? -comparison : comparison;
@@ -228,15 +228,15 @@ export function calculateTransactionVolume(
   let periodStart: number;
 
   switch (period) {
-    case 'daily':
-      periodStart = now - 86400; // 24 hours
-      break;
-    case 'weekly':
-      periodStart = now - 604800; // 7 days
-      break;
-    case 'monthly':
-      periodStart = now - 2592000; // 30 days
-      break;
+  case 'daily':
+    periodStart = now - 86400; // 24 hours
+    break;
+  case 'weekly':
+    periodStart = now - 604800; // 7 days
+    break;
+  case 'monthly':
+    periodStart = now - 2592000; // 30 days
+    break;
   }
 
   const filteredTxs = transactions.filter(tx => tx.timestamp >= periodStart);

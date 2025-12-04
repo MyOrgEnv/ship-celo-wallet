@@ -81,27 +81,27 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
     }
 
     switch (type) {
-      case 'sent':
-        return <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">↑</div>;
-      case 'received':
-        return <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">↓</div>;
-      case 'contract':
-        return <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">⚡</div>;
-      default:
-        return <div className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center">↑</div>;
+    case 'sent':
+      return <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">↑</div>;
+    case 'received':
+      return <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">↓</div>;
+    case 'contract':
+      return <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">⚡</div>;
+    default:
+      return <div className="w-5 h-5 rounded-full bg-gray-500 flex items-center justify-center">↑</div>;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'success':
-        return 'text-green-600 bg-green-100';
-      case 'failure':
-        return 'text-red-600 bg-red-100';
-      case 'pending':
-        return 'text-yellow-600 bg-yellow-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
+    case 'success':
+      return 'text-green-600 bg-green-100';
+    case 'failure':
+      return 'text-red-600 bg-red-100';
+    case 'pending':
+      return 'text-yellow-600 bg-yellow-100';
+    default:
+      return 'text-gray-600 bg-gray-100';
     }
   };
 

@@ -109,7 +109,7 @@ export function formatTimestamp(timestamp: number): string {
 /**
  * Format a value from wei to a readable format
  */
-export function formatValue(value: string, decimals: number = 18): string {
+export function formatValue(value: string, decimals = 18): string {
   try {
     const valueInWei = BigInt(value);
     const valueInEth = Number(valueInWei) / Math.pow(10, decimals);

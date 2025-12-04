@@ -158,7 +158,7 @@ describe('useTransactionHistory', () => {
       getBlock: vi.fn(),
       getTransactionReceipt: vi.fn()
     };
-    
+
     vi.mocked(createPublicClient).mockReturnValue(mockClient);
 
     const { result } = renderHook(() => useTransactionHistory());
