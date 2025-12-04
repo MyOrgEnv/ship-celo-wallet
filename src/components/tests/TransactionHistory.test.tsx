@@ -5,9 +5,6 @@ import { TransactionHistory } from '../TransactionHistory';
 
 // Mock the useAccount hook
 const mockUseAccount = vi.fn();
-vi.mock('wagmi', () => ({
-  useAccount: mockUseAccount
-}));
 
 // Mock the useTransactionHistory hook
 const mockFetchTransactions = vi.fn();
@@ -28,6 +25,10 @@ vi.mock('../../hooks/useTransactionHistory', () => ({
     chainId: 42220,
     isConnected: true
   })
+}));
+
+vi.mock('wagmi', () => ({
+  useAccount: mockUseAccount
 }));
 
 const mockTransactions = [
