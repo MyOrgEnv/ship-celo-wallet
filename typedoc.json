@@ -1,0 +1,12 @@
+{
+  "entryPoints": ["src"],
+  "tsconfig": "tsconfig.json",
+  "out": "docs/api",
+  "plugin": [],
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeExternals": false,
+  "hideGenerator": true,
+  "categorizeByGroup": true,
+  "includeVersion": true
+}
