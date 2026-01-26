@@ -6,7 +6,7 @@ const createCeloChain = ({
   currencyName,
   rpc,
   explorerName,
-  explorerUrl,
+  explorerUrl
 }: {
   id: number
   name: string
@@ -21,17 +21,17 @@ const createCeloChain = ({
     nativeCurrency: {
       name: currencyName,
       symbol: 'CELO',
-      decimals: 18,
+      decimals: 18
     },
     rpcUrls: {
       default: {
-        http: [rpc],
-      },
+        http: [rpc]
+      }
     },
     blockExplorers: {
-      default: { name: explorerName, url: explorerUrl },
-    },
-  })
+      default: { name: explorerName, url: explorerUrl }
+    }
+  });
 
 export const celo = createCeloChain({
   id: 42220,
@@ -39,8 +39,8 @@ export const celo = createCeloChain({
   currencyName: 'Celo',
   rpc: 'https://forno.celo.org',
   explorerName: 'Celo Explorer',
-  explorerUrl: 'https://celoscan.io',
-})
+  explorerUrl: 'https://celoscan.io'
+});
 
 export const celoAlfajores = createCeloChain({
   id: 44787,
@@ -48,5 +48,5 @@ export const celoAlfajores = createCeloChain({
   currencyName: 'Alfajores Celo',
   rpc: 'https://alfajores-forno.celo-testnet.org',
   explorerName: 'CeloScan Alfajores',
-  explorerUrl: 'https://alfajores.celoscan.io',
-})
+  explorerUrl: 'https://alfajores.celoscan.io'
+});

@@ -18,5 +18,5 @@ export default meta;
 type Story = StoryObj<typeof WalletConnectUI>;
 
 export const Default: Story = {
-  args: {},
+  args: {}
 };

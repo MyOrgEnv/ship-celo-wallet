@@ -9,7 +9,7 @@ function findCodeBlocks(md: string): string[] {
   const regex = /```tsx([\s\S]*?)```/g;
   const blocks: string[] = [];
   let m: RegExpExecArray | null;
-  while ((m = regex.exec(md)) !== null) blocks.push(m[1]);
+  while ((m = regex.exec(md)) !== null) {blocks.push(m[1]);}
   return blocks;
 }
 
@@ -52,8 +52,7 @@ function walk(dir: string): string[] {
   for (const entry of fs.readdirSync(dir)) {
     const full = path.join(dir, entry);
     const stat = fs.statSync(full);
-    if (stat.isDirectory()) out.push(...walk(full));
-    else out.push(full);
+    if (stat.isDirectory()) {out.push(...walk(full));} else {out.push(full);}
   }
   return out;
 }

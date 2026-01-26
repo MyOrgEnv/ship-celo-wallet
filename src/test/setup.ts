@@ -1,9 +1,5 @@
-import '@testing-library/jest-dom';
-import { expect, vi } from 'vitest';
-import * as matchers from '@testing-library/jest-dom/matchers';
-
-// extends Vitest's expect with jest-dom matchers
-expect.extend(matchers);
+import '@testing-library/jest-dom/vitest';
+import { vi } from 'vitest';
 
 // Mock wagmi hooks
 vi.mock('wagmi', () => ({

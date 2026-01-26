@@ -160,6 +160,11 @@ export function getTransactionType(
   contractAddress?: string,
   input?: string
 ): 'sent' | 'received' | 'contract' {
+  // Check if it's contract creation
+  if (!to || to === '0x') {
+    return 'contract';
+  }
+
   // Check if it's a contract interaction
   if (contractAddress || (input && input !== '0x')) {
     return 'contract';

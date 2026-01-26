@@ -17,5 +17,5 @@ export default meta;
 type Story = StoryObj<typeof WalletStatus>;
 
 export const Default: Story = {
-  args: {},
+  args: {}
 };

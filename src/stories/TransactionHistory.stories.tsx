@@ -22,5 +22,5 @@ type Story = StoryObj<typeof TransactionHistory>;
 export const Default: Story = {
   args: {
     className: 'mt-6'
-  },
+  }
 };

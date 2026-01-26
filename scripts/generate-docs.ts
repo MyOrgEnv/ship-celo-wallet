@@ -37,7 +37,7 @@ function generatePropTable(doc: ComponentDoc): string {
   const rows = Object.entries(doc.props).map(([name, prop]) => {
     const type = mdEscape(prop.type.name || '');
     const required = prop.required ? 'Yes' : 'No';
-    const defaultValue = prop.defaultValue?.value ? '`' + mdEscape(prop.defaultValue.value) + '`' : '-';
+    const defaultValue = prop.defaultValue?.value ? `\`${  mdEscape(prop.defaultValue.value)  }\`` : '-';
     const description = mdEscape(prop.description || '');
     return `| ${name} | ${type} | ${required} | ${defaultValue} | ${description} |`;
   });
@@ -61,34 +61,34 @@ function exampleBlock(name: string, importPath: string, propsExample: string): s
 
 function integrationGuide(name: string): string {
   return [
-    `### Integration Guide`,
-    `- Install dependencies: \`npm i wagmi @walletconnect/modal @celo\``,
-    `- Wrap your app with required providers (Wagmi, Celo).`,
+    '### Integration Guide',
+    '- Install dependencies: `npm i wagmi @walletconnect/modal @celo`',
+    '- Wrap your app with required providers (Wagmi, Celo).',
     `- Use ${name} in pages where wallet interactions are needed.`,
-    `- Persist session state and handle disconnect gracefully.`,
+    '- Persist session state and handle disconnect gracefully.'
   ].join('\n');
 }
 
 function troubleshooting(): string {
   return [
-    `### Troubleshooting`,
-    `- Modal not opening: Check WalletConnect projectId and network config.`,
-    `- No balance shown: Ensure RPC endpoint is reachable and correct chainId.`,
-    `- Type errors: Run \`npm run typedoc\` to validate exported types.`,
+    '### Troubleshooting',
+    '- Modal not opening: Check WalletConnect projectId and network config.',
+    '- No balance shown: Ensure RPC endpoint is reachable and correct chainId.',
+    '- Type errors: Run `npm run typedoc` to validate exported types.'
   ].join('\n');
 }
 
 function hookSection(name: string, hooks: string[]): string {
-  if (!hooks.length) return '';
+  if (!hooks.length) {return '';}
   return [
-    `### Hooks`,
+    '### Hooks',
     ...hooks.map(h => `- ${h} — usage and return types.`)
   ].join('\n');
 }
 
 function discoverComponents(): string[] {
   const dir = path.join(SRC, 'components');
-  if (!fs.existsSync(dir)) return [];
+  if (!fs.existsSync(dir)) {return [];}
   return fs.readdirSync(dir)
     .filter(f => f.endsWith('.tsx'))
     .map(f => path.join(dir, f));
@@ -96,19 +96,21 @@ function discoverComponents(): string[] {
 
 function parseComponent(file: string): ComponentDoc | null {
   try {
-    const docs = parse({ savePropValueAsString: true, shouldRemoveUndefinedFromOptional: true })(file);
-    if (docs.length) return docs[0];
-  } catch (_) {}
+    const docs = parse(file, { savePropValueAsString: true, shouldRemoveUndefinedFromOptional: true });
+    if (docs.length) {return docs[0];}
+  } catch (error) {
+    console.error('Failed to parse component:', error);
+  }
   return null;
 }
 
 function propsExampleFromDoc(doc: ComponentDoc): string {
   const pairs = Object.entries(doc.props).map(([name, prop]) => {
     const t = prop.type.name;
-    if (t.includes('string')) return `${name}="example"`;
-    if (t.includes('number')) return `${name}={42}`;
-    if (t.includes('boolean')) return `${name}={true}`;
-    return `${name}={` + '/* see docs */' + `}`;
+    if (t.includes('string')) {return `${name}="example"`;}
+    if (t.includes('number')) {return `${name}={42}`;}
+    if (t.includes('boolean')) {return `${name}={true}`;}
+    return `${name}={` + '/* see docs */' + '}';
   });
   return pairs.join(' ');
 }
@@ -116,13 +118,13 @@ function propsExampleFromDoc(doc: ComponentDoc): string {
 function generate() {
   ensureDir(OUT);
   const indexMd = [
-    `# Ship Celo Wallet Documentation`,
+    '# Ship Celo Wallet Documentation',
     `Version: v${VERSION}`,
-    ``,
-    `- Interactive Playground: See Storybook build in ./storybook-static`,
-    `- API Reference: ./api`,
-    `- Components: ./components`,
-    `- Guides: ./guides`,
+    '',
+    '- Interactive Playground: See Storybook build in ./storybook-static',
+    '- API Reference: ./api',
+    '- Components: ./components',
+    '- Guides: ./guides'
   ].join('\n');
   writeFile(path.join(OUT, 'index.md'), indexMd);
   addToIndex('Home', `v${VERSION}/index.md`, ['Interactive Playground', 'API Reference', 'Components', 'Guides']);
@@ -139,13 +141,13 @@ function generate() {
 
     if (doc) {
       content += `\n${doc.description || 'Component documentation.'}\n`;
-      content += `\n## Props\n`;
+      content += '\n## Props\n';
       headings.push('Props');
-      content += generatePropTable(doc) + '\n';
+      content += `${generatePropTable(doc)  }\n`;
 
-      content += `\n## Example\n`;
+      content += '\n## Example\n';
       headings.push('Example');
-      content += exampleBlock(name, `./${relImport}`, propsExampleFromDoc(doc)) + '\n';
+      content += `${exampleBlock(name, `./${relImport}`, propsExampleFromDoc(doc))  }\n`;
 
       content += `\n${integrationGuide(name)}\n`;
       headings.push('Integration Guide');
@@ -155,7 +157,7 @@ function generate() {
 
       content += `\n${hookSection(name, [])}\n`;
     } else {
-      content += `\nNo props detected. Ensure the component is exported and uses TypeScript.\n`;
+      content += '\nNo props detected. Ensure the component is exported and uses TypeScript.\n';
     }
 
     const outFile = path.join(compOut, `${name}.md`);
@@ -166,11 +168,11 @@ function generate() {
   const guidesOut = path.join(OUT, 'guides');
   ensureDir(guidesOut);
   const gettingStarted = [
-    `# Getting Started`,
-    `1. Run Storybook: \`npm run storybook\``,
-    `2. Generate API docs: \`npm run typedoc\``,
-    `3. Generate component docs: \`npm run docs:generate\``,
-    `4. Serve docs: \`npm run docs:serve\``,
+    '# Getting Started',
+    '1. Run Storybook: `npm run storybook`',
+    '2. Generate API docs: `npm run typedoc`',
+    '3. Generate component docs: `npm run docs:generate`',
+    '4. Serve docs: `npm run docs:serve`'
   ].join('\n');
   writeFile(path.join(guidesOut, 'getting-started.md'), gettingStarted);
   addToIndex('Getting Started', `v${VERSION}/guides/getting-started.md`, ['Run Storybook', 'Generate API docs', 'Serve docs']);

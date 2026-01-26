@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useTransactionHistory } from '../hooks/useTransactionHistory';
-import { TransactionFilters } from '../types/transaction';
+import type { TransactionFilters } from '../types/transaction';
+import { ErrorRecovery } from './ErrorRecovery';
 import {
   getTransactionUrl,
   getAddressUrl,
@@ -21,7 +22,7 @@ interface FilterState extends TransactionFilters {
 
 export function TransactionHistory({ className = '' }: TransactionHistoryProps) {
   const { address, isConnected } = useAccount();
-  const { fetchTransactions, error } = useTransactionHistory();
+  const { fetchTransactions } = useTransactionHistory();
 
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,6 +33,7 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
   });
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState<Error | null>(null);
   const itemsPerPage = 10;
 
   // Fetch transactions on mount and when filters change
@@ -58,6 +60,7 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
       setTransactions(result.transactions);
     } catch (error) {
       console.error('Failed to load transactions:', error);
+      setError(new Error((error as any).message));
     } finally {
       setLoading(false);
     }
@@ -195,11 +198,12 @@ export function TransactionHistory({ className = '' }: TransactionHistoryProps) 
             <p className="text-gray-500">Loading transactions...</p>
           </div>
         ) : error ? (
-          <div className="p-6 text-center">
-            <div className="w-8 h-8 text-red-500 mx-auto mb-2">⚠</div>
-            <p className="text-red-500 mb-2">Error loading transactions</p>
-            <p className="text-sm text-gray-500">{error.message}</p>
-          </div>
+          <ErrorRecovery
+            error={error}
+            context="transaction history"
+            onRetry={loadTransactions}
+            onRecovered={() => setError(null)}
+          />
         ) : filteredTransactions.length === 0 ? (
           <div className="p-6 text-center">
             <p className="text-gray-500">No transactions found</p>

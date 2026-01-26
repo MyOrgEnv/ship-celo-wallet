@@ -6,24 +6,24 @@ import { walletConnect } from 'wagmi/connectors';
 import { celo, celoAlfajores } from '../config/celoChains';
 
 const walletConnectProjectId =
-  import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined
+  import.meta.env.VITE_WALLETCONNECT_PROJECT_ID as string | undefined;
 
 if (!walletConnectProjectId) {
   console.warn(
-    'VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.',
-  )
+    'VITE_WALLETCONNECT_PROJECT_ID is not set. WalletConnect may not function as expected.'
+  );
 }
 
-const queryClient = new QueryClient()
-const supportedChains = [celoAlfajores, celo] as const
+const queryClient = new QueryClient();
+const supportedChains = [celoAlfajores, celo] as const;
 
 const transports = supportedChains.reduce<Record<number, ReturnType<typeof http>>>(
   (map, chain) => {
-    map[chain.id] = http(chain.rpcUrls.default.http[0])
-    return map
+    map[chain.id] = http(chain.rpcUrls.default.http[0]);
+    return map;
   },
-  {},
-)
+  {}
+);
 
 const wagmiConfig = createConfig({
   multiInjectedProviderDiscovery: true,

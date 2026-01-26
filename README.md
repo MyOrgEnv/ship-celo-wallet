@@ -8,6 +8,7 @@ A starter kit for building Celo dApps with:
 - Celo mainnet + Alfajores configuration
 - Example wallet connect UI
 - Basic network status & switching
+- **Real-time network health monitoring** (NEW)
 
 This project is designed to be forked and extended, especially for the Proof-of-Ship program.
 
@@ -254,6 +255,48 @@ Here are the scripts you can run in this project:
 | `npm test` | Run tests in watch mode |
 | `npm run test:ui` | Run tests with interactive UI |
 | `npm run test:run` | Run tests once and exit |
+
+## Network Health Monitoring
+
+This project includes a comprehensive network health monitoring system that provides real-time insights into Celo network performance and status.
+
+### Features
+
+- **Real-time Monitoring**: Continuous health checks of RPC endpoints
+- **Network Metrics**: Response times, block production, gas prices, and transaction success rates
+- **Congestion Analysis**: Visual indicators of network congestion levels
+- **Endpoint Failover**: Automatic fallback to healthy endpoints
+- **Caching**: Intelligent caching to reduce API calls while maintaining freshness
+- **Error Handling**: User-friendly error messages for various failure scenarios
+
+### Usage
+
+The `NetworkHealth` component automatically monitors the current network and displays:
+
+- Network status (Healthy/Degraded/Down)
+- Congestion level with visual progress bar
+- Key metrics: RPC response time, block production time, gas price trends
+- Last updated timestamp with cache information
+- Individual RPC endpoint statuses
+
+```tsx
+import { NetworkHealth } from './components/NetworkHealth';
+
+// Use with your RPC endpoints
+<NetworkHealth endpoints={celoEndpoints} />
+```
+
+### Configuration
+
+The monitoring system can be customized via the `useNetworkHealth` hook:
+
+```tsx
+const { data, loading, error } = useNetworkHealth({
+  endpoints: celoEndpoints,
+  interval: 30000,        // Check every 30 seconds
+  cacheTimeout: 15000     // Cache data for 15 seconds
+});
+```
 
 ## Testing Guide
 
